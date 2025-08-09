@@ -1,6 +1,13 @@
-const BASE_URL = "https://open.er-api.com/v6/latest/USD"
+const BASE_URL =
+  "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies";
+
 
 const dropdrowns = document.querySelectorAll(".dropdown select");
+const btn = document.querySelector("form button");
+const fromCurr = document.querySelector(".from select");
+const toCurr = document.querySelector(".to select");
+const msg = document.querySelector(".msg");
+
 
 for(let select of dropdrowns)
 {
@@ -21,6 +28,24 @@ for(let select of dropdrowns)
     })
 }
 
+const updateExchangerate = async ()=>{
+    let amount = document.querySelector(".amount input");
+    let amtValue = amount.value;
+    if(amtValue === "" || amtValue < 1)
+    {
+        amtValue = 1;
+        amount.value = "1";
+    }
+
+    const URL = `${BASE_URL}/${fromCurr.value.toLowerCase()}/${toCurr.value.toLowerCase()}.json`;
+  let response = await fetch(URL);
+  let data = await response.json();
+  let rate = data[toCurr.value.toLowerCase()];
+
+  let finalAmount = amtValue * rate;
+  msg.innerText = `${amtValue} ${fromCurr.value} = ${finalAmount} ${toCurr.value}`;
+}
+
 const updateFlag = (element) =>{
 
     let currCode = element.value;
@@ -29,3 +54,13 @@ const updateFlag = (element) =>{
     let img = element.parentElement.querySelector("img")
     img.src = newSrc;
 }
+
+btn.addEventListener("click" ,(evt)=>{
+    evt.preventDefault();
+    updateExchangerate();
+    
+})
+
+window.addEventListener("load",()=>{
+    updateExchangerate();
+})
